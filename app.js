@@ -59,7 +59,8 @@ function cardTile(card) {
   img.onclick = () => openViewer(card);
   const btn = el('button', { className: 'add' });
   btn.onclick = () => toggleCart(card.id);
-  const tile = el('div', { className: 'card' }, img,
+  const tile = el('div', { className: 'card' },
+    el('div', { className: 'thumb-wrap' }, img, el('span', { className: 'thumb-glint' })),
     el('div', { className: 'meta' },
       el('div', { className: 'name', textContent: title(card) }),
       el('div', { className: 'sub', textContent: subtitle(card) })),
