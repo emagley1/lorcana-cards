@@ -4,8 +4,8 @@
 // their side), 3 mm gaps, R3 corners, on a 300 × 225 mm page with the grid centred.
 const LAYOUT = { pageW: 300, pageH: 225, cardW: 88, cardH: 63, gap: 3, radius: 3, cols: 3, rows: 3 };
 
-// Highest first. Promos sit below Common so they are only picked when nothing else exists.
-const RARITY_RANK = { Iconic: 9, Enchanted: 8, Epic: 7, Legendary: 6, 'Super Rare': 5, Rare: 4, Uncommon: 3, Common: 2, Promo: 1 };
+// Highest first. Eric's rule: a promo beats everything except an Enchanted or Iconic printing.
+const RARITY_RANK = { Iconic: 9, Enchanted: 8, Promo: 7, Epic: 6, Legendary: 5, 'Super Rare': 4, Rare: 3, Uncommon: 2, Common: 1 };
 
 const deck = { rows: [], picks: new Map(), byKey: null, byName: null };
 

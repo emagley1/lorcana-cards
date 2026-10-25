@@ -9,7 +9,7 @@ Static site: open index.html from any web server. No build step.
   (Or rerun lorcana-app/tools/prepare-data.js on the source zip.)
 - vendor/: jsPDF 2.5.2 and JSZip 3.10.1, copied from npm.
 - deck.js: "Deck to PDF". Paste a list like `4 Flash - Efficient Clerk`; each line picks the
-  highest-rarity printing (Iconic > Enchanted > Epic > Legendary > Super Rare > Rare > Uncommon > Common > Promo;
+  highest-rarity printing (Iconic > Enchanted > Promo > Epic > Legendary > Super Rare > Rare > Uncommon > Common;
   ties go to the newest set). PDF is 300 x 225 mm, 3x3 cards of 88 x 63 mm turned sideways, 3 mm gaps, R3 corners, grid centred.
 - Cart downloads a zip of full-size JPEGs.
 
