@@ -118,10 +118,10 @@ async function slotImage(card) {
   return canvas.toDataURL('image/jpeg', 0.92);
 }
 
-async function makePdf() {
-  const btn = $('deckPdf');
-  const cards = deck.rows.flatMap((r) => (r.chosen ? Array(r.qty).fill(r.chosen) : []));
+// Lays the cards out in order, 9 to a page; used by both the deck list and the cart.
+async function makePdf(cards, btn, outlines, fileLabel) {
   if (!cards.length) return;
+  const label = btn.textContent;
   btn.disabled = true;
   try {
     const L = LAYOUT;
@@ -133,7 +133,6 @@ async function makePdf() {
     const top = (L.pageH - gridH) / 2;
     const perPage = L.cols * L.rows;
     const images = new Map();
-    const outlines = $('deckOutlines').checked;
     for (let i = 0; i < cards.length; i++) {
       const card = cards[i];
       if (!images.has(card.id)) {
@@ -152,14 +151,24 @@ async function makePdf() {
       }
     }
     btn.textContent = 'Saving...';
-    saveBlob(doc.output('blob'), `Lorcana Deck ${stamp()}.pdf`);
+    saveBlob(doc.output('blob'), `Lorcana ${fileLabel} ${stamp()}.pdf`);
     toast(`Saved a PDF with ${cards.length} cards`);
   } catch (err) {
     toast('Something went wrong making the PDF');
     console.error(err);
   }
-  btn.textContent = 'Make PDF';
+  btn.textContent = label;
   btn.disabled = false;
+}
+
+function makeDeckPdf() {
+  const cards = deck.rows.flatMap((r) => (r.chosen ? Array(r.qty).fill(r.chosen) : []));
+  return makePdf(cards, $('deckPdf'), $('deckOutlines').checked, 'Deck');
+}
+
+function makeCartPdf() {
+  const cards = [...state.cart].map((id) => byId.get(id)).filter(Boolean);
+  return makePdf(cards, $('cartPdf'), $('cartOutlines').checked, 'Cards');
 }
 
 function findDeckCards() {
@@ -181,7 +190,12 @@ function initDeck() {
   $('deckButton').onclick = () => openDeck(true);
   $('closeDeck').onclick = () => openDeck(false);
   $('deckFind').onclick = findDeckCards;
-  $('deckPdf').onclick = makePdf;
+  $('deckPdf').onclick = makeDeckPdf;
+  $('cartPdf').onclick = makeCartPdf;
+  // One cut-lines preference, shown in both places.
+  for (const id of ['deckOutlines', 'cartOutlines']) {
+    $(id).onchange = (e) => { $('deckOutlines').checked = $('cartOutlines').checked = e.target.checked; };
+  }
   if ($('deckText').value.trim()) findDeckCards();
   else renderDeck();
 }

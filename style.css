@@ -276,8 +276,11 @@ main { padding: 0 24px 60px; }
 .cart-item .remove:hover { text-decoration: underline; }
 .cart-empty { color: var(--muted); text-align: center; padding: 50px 16px; }
 .cart-empty::before { content: "❖"; display: block; font-size: 34px; color: var(--gold); opacity: .7; margin-bottom: 10px; }
-.cart-foot { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--line); }
-.cart-foot .primary { flex: 1; }
+.cart-foot { display: flex; flex-direction: column; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--line); }
+.cart-foot-row { display: flex; gap: 10px; }
+.cart-foot-row .secondary:last-child { flex: 1; }
+.cart-foot .check { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; }
+.cart-foot .check input { accent-color: var(--gold); width: 16px; height: 16px; }
 
 .viewer { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(8, 4, 24, .82); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); padding: 30px; }
 .viewer.open { display: flex; animation: fadein .25s ease; }

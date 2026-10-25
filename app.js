@@ -127,7 +127,9 @@ function renderCart() {
     }));
   }
   $('downloadButton').disabled = !items.length;
-  $('downloadButton').textContent = items.length ? `Download all (${items.length})` : 'Download all';
+  $('downloadButton').textContent = items.length ? `Download images (${items.length})` : 'Download images';
+  $('cartPdf').disabled = !items.length;
+  $('cartPdf').textContent = items.length ? `Make PDF (${items.length} card${items.length === 1 ? '' : 's'}, ${Math.ceil(items.length / 9)} page${items.length > 9 ? 's' : ''})` : 'Make PDF';
 }
 
 function openCart(open) {
