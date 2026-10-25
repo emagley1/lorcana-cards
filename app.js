@@ -2,7 +2,7 @@ const PAGE_SIZE = 120;
 const CART_KEY = 'lorcana-cart';
 
 const $ = (id) => document.getElementById(id);
-const state = { catalog: null, results: [], shown: 0, cart: new Set(), filters: {} };
+const state = { catalog: null, results: [], shown: 0, cart: new Map(), filters: {} }; // cart: card id → number of copies
 let byId = new Map();
 
 function cardUrl(rel) {
@@ -57,23 +57,27 @@ function renderMore() {
 function cardTile(card) {
   const img = el('img', { className: 'thumb', loading: 'lazy', alt: title(card), src: cardUrl(card.thumb) });
   img.onclick = () => openViewer(card);
-  const btn = el('button', { className: 'add' });
-  btn.onclick = () => toggleCart(card.id);
   const tile = el('div', { className: 'card' },
     el('div', { className: 'thumb-wrap' }, img, el('span', { className: 'thumb-glint' })),
     el('div', { className: 'meta' },
       el('div', { className: 'name', textContent: title(card) }),
       el('div', { className: 'sub', textContent: subtitle(card) })),
-    btn);
+    el('div', { className: 'add-slot' }));
   tile.dataset.id = card.id;
   paintTile(tile);
   return tile;
 }
 
 function paintTile(tile) {
-  const inCart = state.cart.has(tile.dataset.id);
-  tile.classList.toggle('in-cart', inCart);
-  tile.querySelector('.add').textContent = inCart ? '✓ In cart' : 'Add to cart';
+  const id = tile.dataset.id;
+  const qty = qtyOf(id);
+  if (Number(tile.dataset.qty || 0) === qty && tile.querySelector('.add')) return;
+  tile.classList.toggle('in-cart', qty > 0);
+  tile.dataset.qty = qty;
+  const control = qty
+    ? stepper(id, 'add', `${qty} in cart`)
+    : Object.assign(el('button', { className: 'add', textContent: 'Add to cart' }), { onclick: () => setQty(id, 1) });
+  tile.querySelector('.add-slot').replaceChildren(control);
 }
 
 // ---- Filters ----
@@ -91,18 +95,30 @@ function buildFilters() {
 // ---- Cart ----
 
 function saveCart() {
-  localStorage.setItem(CART_KEY, JSON.stringify([...state.cart]));
+  try { localStorage.setItem(CART_KEY, JSON.stringify([...state.cart])); } catch { /* not saved */ }
 }
 
-function toggleCart(id) {
-  if (state.cart.has(id)) state.cart.delete(id);
-  else state.cart.add(id);
+const qtyOf = (id) => state.cart.get(id) || 0;
+const cartTotal = () => [...state.cart.values()].reduce((a, b) => a + b, 0);
+
+function setQty(id, qty) {
+  if (qty > 0) state.cart.set(id, Math.min(qty, 99));
+  else state.cart.delete(id);
   cartChanged();
+}
+
+// − n + buttons for changing how many copies of a card are in the cart.
+function stepper(id, className, label) {
+  const minus = el('button', { className: 'step', textContent: '−', title: 'One fewer' });
+  minus.onclick = () => setQty(id, qtyOf(id) - 1);
+  const plus = el('button', { className: 'step', textContent: '+', title: 'One more' });
+  plus.onclick = () => setQty(id, qtyOf(id) + 1);
+  return el('div', { className: `${className} stepper` }, minus, el('span', { className: 'count', textContent: label }), plus);
 }
 
 function cartChanged() {
   saveCart();
-  $('cartCount').textContent = state.cart.size;
+  $('cartCount').textContent = cartTotal();
   document.querySelectorAll('.card').forEach(paintTile);
   renderCart();
   if (viewerCard) paintViewerButton();
@@ -110,26 +126,28 @@ function cartChanged() {
 
 function renderCart() {
   const list = $('cartList');
-  const items = [...state.cart].map((id) => byId.get(id)).filter(Boolean);
+  const items = [...state.cart.keys()].map((id) => byId.get(id)).filter(Boolean);
+  const total = cartTotal();
   if (!items.length) {
     list.replaceChildren(el('div', { className: 'cart-empty', textContent: 'Your cart is empty. Click "Add to cart" on any card.' }));
   } else {
     list.replaceChildren(...items.map((card) => {
       const remove = el('button', { className: 'remove', textContent: 'Remove' });
-      remove.onclick = () => toggleCart(card.id);
+      remove.onclick = () => setQty(card.id, 0);
       const img = el('img', { src: cardUrl(card.thumb), alt: '' });
       img.onclick = () => openViewer(card);
       return el('div', { className: 'cart-item' }, img,
         el('div', { className: 'info' },
           el('div', { textContent: title(card) }),
           el('div', { className: 'sub', textContent: subtitle(card) })),
+        stepper(card.id, 'qty', String(qtyOf(card.id))),
         remove);
     }));
   }
   $('downloadButton').disabled = !items.length;
   $('downloadButton').textContent = items.length ? `Download images (${items.length})` : 'Download images';
   $('cartPdf').disabled = !items.length;
-  $('cartPdf').textContent = items.length ? `Make PDF (${items.length} card${items.length === 1 ? '' : 's'}, ${Math.ceil(items.length / 9)} page${items.length > 9 ? 's' : ''})` : 'Make PDF';
+  $('cartPdf').textContent = total ? `Make PDF (${total} card${total === 1 ? '' : 's'}, ${Math.ceil(total / 9)} page${total > 9 ? 's' : ''})` : 'Make PDF';
 }
 
 function openCart(open) {
@@ -142,7 +160,7 @@ async function downloadCart() {
   btn.disabled = true;
   btn.textContent = 'Saving...';
   try {
-    const ids = [...state.cart];
+    const ids = [...state.cart.keys()];
     const zip = new JSZip();
     const used = new Set();
     for (let i = 0; i < ids.length; i++) {
@@ -219,7 +237,8 @@ function openViewer(card) {
 }
 
 function paintViewerButton() {
-  $('viewerCartButton').textContent = state.cart.has(viewerCard.id) ? '✓ In cart (click to remove)' : 'Add to cart';
+  const qty = qtyOf(viewerCard.id);
+  $('viewerCartButton').textContent = qty ? `Add another (${qty} in cart)` : 'Add to cart';
 }
 
 function closeViewer() {
@@ -251,7 +270,11 @@ async function init() {
     byId.set(card.id, card);
   }
   try {
-    for (const id of JSON.parse(localStorage.getItem(CART_KEY) || '[]')) if (byId.has(id)) state.cart.add(id);
+    // Older carts were a plain list of ids; newer ones are [id, copies] pairs.
+    for (const item of JSON.parse(localStorage.getItem(CART_KEY) || '[]')) {
+      const [id, qty] = Array.isArray(item) ? item : [item, 1];
+      if (byId.has(id) && qty > 0) state.cart.set(id, qty);
+    }
   } catch { /* start with an empty cart */ }
 
   buildFilters();
@@ -264,9 +287,9 @@ async function init() {
     runSearch();
   };
   $('addAllButton').onclick = () => {
-    state.results.forEach((c) => state.cart.add(c.id));
+    state.results.forEach((c) => { if (!state.cart.has(c.id)) state.cart.set(c.id, 1); });
     cartChanged();
-    toast(`Cart now has ${state.cart.size} cards`);
+    toast(`Cart now has ${cartTotal()} cards`);
   };
   $('cartButton').onclick = () => openCart(true);
   $('closeCart').onclick = () => openCart(false);
@@ -275,7 +298,7 @@ async function init() {
   $('downloadButton').onclick = downloadCart;
   $('closeViewer').onclick = closeViewer;
   $('viewer').onclick = (e) => { if (e.target === $('viewer')) closeViewer(); };
-  $('viewerCartButton').onclick = () => toggleCart(viewerCard.id);
+  $('viewerCartButton').onclick = () => setQty(viewerCard.id, qtyOf(viewerCard.id) + 1);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeViewer(); openCart(false); openDeck(false); }
   });

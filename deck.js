@@ -186,7 +186,7 @@ function makeDeckPdf() {
 }
 
 function makeCartPdf() {
-  const cards = [...state.cart].map((id) => byId.get(id)).filter(Boolean);
+  const cards = [...state.cart].flatMap(([id, qty]) => (byId.has(id) ? Array(qty).fill(byId.get(id)) : []));
   return makePdf(cards, $('cartPdf'), pdfOptions(), 'Cards');
 }
 

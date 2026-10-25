@@ -210,8 +210,8 @@ main { padding: 0 24px 60px; }
   box-shadow: 0 6px 20px rgba(0, 0, 0, .35), 0 0 22px rgba(255, 180, 50, .55);
 }
 .card.in-cart::after {
-  content: "✦"; position: absolute; top: -10px; right: -10px; z-index: 2;
-  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  content: "×" attr(data-qty); position: absolute; top: -10px; right: -10px; z-index: 2;
+  min-width: 30px; height: 30px; padding: 0 6px; font-weight: 800; border-radius: 50%; display: grid; place-items: center;
   background: var(--gold-grad); color: #2a1606; font-size: 15px;
   box-shadow: 0 0 14px rgba(255, 200, 80, .8);
 }
@@ -235,6 +235,16 @@ main { padding: 0 24px 60px; }
 .card .add { margin: 8px 12px 12px; padding: 9px; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); font-weight: 600; transition: background .2s, box-shadow .2s; }
 .card .add:hover { background: var(--panel-2-hover); box-shadow: 0 0 14px rgba(183, 139, 255, .4); }
 .card.in-cart .add { background: var(--gold-grad); color: #2a1606; font-weight: 700; border-color: transparent; }
+.add-slot { display: flex; flex-direction: column; }
+.stepper { display: flex; align-items: center; gap: 6px; }
+.stepper .count { flex: 1; text-align: center; white-space: nowrap; }
+.stepper .step { width: 30px; height: 30px; padding: 0; border-radius: 8px; font-size: 18px; font-weight: 800; line-height: 1; background: rgba(42, 22, 6, .15); color: inherit; }
+.stepper .step:hover { background: rgba(42, 22, 6, .3); }
+.card .add.stepper { padding: 4px; }
+.cart-item .qty { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+.cart-item .qty .count { min-width: 22px; font-weight: 700; color: var(--gold-light); }
+.cart-item .qty .step { background: transparent; color: var(--text); }
+.cart-item .qty .step:hover { background: var(--panel-2-hover); }
 .more { text-align: center; padding: 28px; }
 .empty { color: var(--muted); text-align: center; padding: 70px 0; font-size: 18px; font-family: var(--heading); grid-column: 1 / -1; }
 .empty::before { content: "✧ ✦ ✧"; display: block; color: var(--gold); font-size: 22px; margin-bottom: 10px; letter-spacing: .4em; }
