@@ -363,6 +363,28 @@ main { padding: 0 24px 60px; }
 .deck-foot .check input { accent-color: var(--gold); width: 16px; height: 16px; }
 .deck-note { flex: 1; color: var(--muted); font-size: 13px; }
 
+.deck-save { display: flex; gap: 8px; }
+.deck-save input {
+  flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px;
+}
+.deck-save input:focus { outline: none; border-color: var(--gold); }
+
+/* ---- Top decks ---- */
+.top-decks-list { flex: 1; overflow-y: auto; padding: 8px 20px 20px; }
+.top-decks-list h3 { color: var(--gold); font-family: var(--heading); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; margin: 14px 4px 10px; }
+.top-deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.top-deck { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); }
+.top-deck-cover { display: flex; gap: 6px; min-height: 40px; }
+.top-deck-cover img { flex: 1; min-width: 0; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 6px; background: #0d0820; box-shadow: 0 0 0 1px var(--line); }
+.top-deck-meta { display: flex; flex-direction: column; gap: 3px; }
+.top-deck-name { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.top-deck-meta .sub { color: var(--muted); font-size: 13px; }
+.top-deck-meta a.sub { color: var(--gold-light); }
+.inks { display: flex; gap: 3px; }
+.ink { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .35); }
+.top-deck-actions { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+
 @media (max-width: 960px) {
   .topbar { flex-wrap: wrap; gap: 10px 12px; padding: 10px 16px 12px; }
   .brand { margin-right: auto; }
@@ -372,6 +394,7 @@ main { padding: 0 24px 60px; }
 @media (max-width: 800px) {
   .deck { padding: 0; }
   .deck-body { border-radius: 0; max-height: none; }
+  .top-decks-list { padding: 8px 16px 16px; }
   .deck-main { flex-direction: column; overflow-y: auto; }
   .deck-input { width: auto; }
   .deck-input textarea { min-height: 180px; }

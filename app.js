@@ -303,6 +303,7 @@ async function init() {
     if (e.key === 'Escape') { closeViewer(); openCart(false); openDeck(false); }
   });
   initDeck();
+  initTopDecks();
 
   cartChanged();
   runSearch();

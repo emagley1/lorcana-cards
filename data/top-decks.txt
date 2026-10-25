@@ -1,0 +1,10 @@
+# Top decks shown in the site's "Top decks" window.
+#
+# Start each deck with a line "## Deck name". Right under it you can add any of:
+#   Inks: Amber, Sapphire
+#   Source: https://dreamborn.ink/decks/...
+#   Note: Won the Oct 2026 store championship
+# Then paste the card list, one card per line, the same way as in "Deck to PDF":
+#   4 Flash - Efficient Clerk
+# Lines starting with # are ignored. Leave a blank line between decks.
+

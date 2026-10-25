@@ -59,6 +59,7 @@
     <div class="search">
       <input id="search" type="search" placeholder="Search by name, set, character, ink, anything..." autofocus>
     </div>
+    <button id="topDecksButton" class="secondary deck-button"><span class="btn-icon" aria-hidden="true">★</span> Top decks</button>
     <button id="deckButton" class="secondary deck-button"><span class="btn-icon" aria-hidden="true">✦</span> Deck to PDF</button>
     <button id="cartButton" class="cart-button"><span class="btn-icon" aria-hidden="true">❖</span> Cart <span id="cartCount" class="badge">0</span></button>
   </header>
@@ -119,6 +120,10 @@
           <label for="deckText">Paste a deck list, one card per line</label>
           <textarea id="deckText" spellcheck="false" placeholder="4 Flash - Efficient Clerk&#10;4 Tod - All Alone&#10;2 Angel - Experiment 624&#10;4 Strength of a Raging Fire"></textarea>
           <button id="deckFind" class="secondary">Find cards</button>
+          <div class="deck-save">
+            <input id="deckName" type="text" placeholder="Deck name" aria-label="Deck name">
+            <button id="deckSave" class="secondary">Save to Top decks</button>
+          </div>
           <p class="deck-help">Each card uses its highest-rarity printing. Use the menu next to a card to pick a different one.</p>
         </div>
         <div class="deck-list-wrap">
@@ -135,11 +140,22 @@
     </div>
   </div>
 
+  <div id="topDecks" class="deck top-decks" aria-hidden="true">
+    <div class="deck-body">
+      <div class="deck-head">
+        <h2>Top decks</h2>
+        <button id="closeTopDecks" class="icon-button" title="Close">✕</button>
+      </div>
+      <div id="topDecksList" class="top-decks-list"></div>
+    </div>
+  </div>
+
   <div id="toast" class="toast"></div>
   <script src="vendor/jspdf.umd.min.js"></script>
   <script src="vendor/jszip.min.js"></script>
   <script src="app.js"></script>
   <script src="deck.js"></script>
+  <script src="topdecks.js"></script>
   <script src="magic.js"></script>
 </body>
 </html>
