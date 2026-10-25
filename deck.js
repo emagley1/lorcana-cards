@@ -94,8 +94,8 @@ function renderDeck() {
 }
 
 // One card, turned on its side to fit the 88 × 63 slot, with R3 corners and white outside them.
-async function slotImage(card) {
-  const bitmap = await loadBitmap(card);
+// `fill` shows through where the image itself is transparent (the card back has see-through corners).
+async function slotImage(bitmap, fill = '#fff') {
   const w = Math.max(bitmap.width, bitmap.height);
   const h = Math.round((w * LAYOUT.cardH) / LAYOUT.cardW);
   const canvas = document.createElement('canvas');
@@ -107,6 +107,8 @@ async function slotImage(card) {
   ctx.beginPath();
   ctx.roundRect(0, 0, w, h, (LAYOUT.radius * w) / LAYOUT.cardW);
   ctx.clip();
+  ctx.fillStyle = fill;
+  ctx.fillRect(0, 0, w, h);
   if (bitmap.height > bitmap.width) {
     ctx.translate(w, 0);
     ctx.rotate(Math.PI / 2);
@@ -118,8 +120,12 @@ async function slotImage(card) {
   return canvas.toDataURL('image/jpeg', 0.92);
 }
 
+const CARD_BACK = 'data/card-back.png';
+
 // Lays the cards out in order, 9 to a page; used by both the deck list and the cart.
-async function makePdf(cards, btn, outlines, fileLabel) {
+// With `backs`, every page of fronts is followed by a full page of card backs for double-sided
+// printing. The page is always full so it lines up whichever way the printer flips the sheet.
+async function makePdf(cards, btn, { outlines, backs }, fileLabel) {
   if (!cards.length) return;
   const label = btn.textContent;
   btn.disabled = true;
@@ -133,21 +139,34 @@ async function makePdf(cards, btn, outlines, fileLabel) {
     const top = (L.pageH - gridH) / 2;
     const perPage = L.cols * L.rows;
     const images = new Map();
-    for (let i = 0; i < cards.length; i++) {
-      const card = cards[i];
-      if (!images.has(card.id)) {
-        btn.textContent = `Preparing ${images.size + 1} of ${new Set(cards.map((c) => c.id)).size}...`;
-        images.set(card.id, await slotImage(card));
-      }
-      const slot = i % perPage;
-      if (i && !slot) doc.addPage([L.pageW, L.pageH], 'landscape');
+    const draw = (data, alias, slot) => {
       const x = left + (slot % L.cols) * (L.cardW + L.gap);
       const y = top + Math.floor(slot / L.cols) * (L.cardH + L.gap);
-      doc.addImage(images.get(card.id), 'JPEG', x, y, L.cardW, L.cardH, 'card' + card.id, 'NONE');
+      doc.addImage(data, 'JPEG', x, y, L.cardW, L.cardH, alias, 'NONE');
       if (outlines) {
         doc.setDrawColor(150);
         doc.setLineWidth(0.15);
         doc.roundedRect(x, y, L.cardW, L.cardH, L.radius, L.radius, 'S');
+      }
+    };
+    const back = backs
+      ? await slotImage(await createImageBitmap(await (await fetch(CARD_BACK)).blob()), '#121214')
+      : null;
+    const unique = new Set(cards.map((c) => c.id)).size;
+    for (let start = 0; start < cards.length; start += perPage) {
+      if (start) doc.addPage([L.pageW, L.pageH], 'landscape');
+      const page = cards.slice(start, start + perPage);
+      for (let slot = 0; slot < page.length; slot++) {
+        const card = page[slot];
+        if (!images.has(card.id)) {
+          btn.textContent = `Preparing ${images.size + 1} of ${unique}...`;
+          images.set(card.id, await slotImage(await loadBitmap(card)));
+        }
+        draw(images.get(card.id), 'card' + card.id, slot);
+      }
+      if (back) {
+        doc.addPage([L.pageW, L.pageH], 'landscape');
+        for (let slot = 0; slot < perPage; slot++) draw(back, 'cardback', slot);
       }
     }
     btn.textContent = 'Saving...';
@@ -163,12 +182,16 @@ async function makePdf(cards, btn, outlines, fileLabel) {
 
 function makeDeckPdf() {
   const cards = deck.rows.flatMap((r) => (r.chosen ? Array(r.qty).fill(r.chosen) : []));
-  return makePdf(cards, $('deckPdf'), $('deckOutlines').checked, 'Deck');
+  return makePdf(cards, $('deckPdf'), pdfOptions(), 'Deck');
 }
 
 function makeCartPdf() {
   const cards = [...state.cart].map((id) => byId.get(id)).filter(Boolean);
-  return makePdf(cards, $('cartPdf'), $('cartOutlines').checked, 'Cards');
+  return makePdf(cards, $('cartPdf'), pdfOptions(), 'Cards');
+}
+
+function pdfOptions() {
+  return { outlines: $('deckOutlines').checked, backs: $('deckBacks').checked };
 }
 
 function findDeckCards() {
@@ -192,9 +215,10 @@ function initDeck() {
   $('deckFind').onclick = findDeckCards;
   $('deckPdf').onclick = makeDeckPdf;
   $('cartPdf').onclick = makeCartPdf;
-  // One cut-lines preference, shown in both places.
-  for (const id of ['deckOutlines', 'cartOutlines']) {
-    $(id).onchange = (e) => { $('deckOutlines').checked = $('cartOutlines').checked = e.target.checked; };
+  // The PDF options show in both the deck window and the cart; keep each pair in step.
+  for (const [a, b] of [['deckOutlines', 'cartOutlines'], ['deckBacks', 'cartBacks']]) {
+    $(a).onchange = () => { $(b).checked = $(a).checked; };
+    $(b).onchange = () => { $(a).checked = $(b).checked; };
   }
   if ($('deckText').value.trim()) findDeckCards();
   else renderDeck();
