@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="icon.png">
+  <title>Lorcana Card Finder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Lorcana Card Finder</div>
+    <div class="search">
+      <input id="search" type="search" placeholder="Search by name, set, character, ink, anything..." autofocus>
+    </div>
+    <button id="deckButton" class="secondary deck-button">Deck to PDF</button>
+    <button id="cartButton" class="cart-button">Cart <span id="cartCount" class="badge">0</span></button>
+  </header>
+
+  <div class="filters" id="filters"></div>
+
+  <main>
+    <div class="results-bar">
+      <span id="resultCount"></span>
+      <div class="results-actions">
+        <button id="addAllButton" class="link-button">Add all shown to cart</button>
+        <button id="clearFiltersButton" class="link-button">Clear search</button>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
+    <div class="more"><button id="moreButton" class="secondary">Show more cards</button></div>
+  </main>
+
+  <aside id="cart" class="cart" aria-hidden="true">
+    <div class="cart-head">
+      <h2>Your cart</h2>
+      <button id="closeCart" class="icon-button" title="Close">✕</button>
+    </div>
+    <div id="cartList" class="cart-list"></div>
+    <div class="cart-foot">
+      <button id="clearCart" class="secondary">Empty cart</button>
+      <button id="downloadButton" class="primary">Download all</button>
+    </div>
+  </aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div id="viewer" class="viewer" aria-hidden="true">
+    <div class="viewer-body">
+      <button id="closeViewer" class="icon-button viewer-close" title="Close">✕</button>
+      <img id="viewerImage" alt="">
+      <div class="viewer-info">
+        <h2 id="viewerTitle"></h2>
+        <dl id="viewerFields"></dl>
+        <button id="viewerCartButton" class="primary"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="deck" class="deck" aria-hidden="true">
+    <div class="deck-body">
+      <div class="deck-head">
+        <h2>Print a deck</h2>
+        <button id="closeDeck" class="icon-button" title="Close">✕</button>
+      </div>
+      <div class="deck-main">
+        <div class="deck-input">
+          <label for="deckText">Paste a deck list, one card per line</label>
+          <textarea id="deckText" spellcheck="false" placeholder="4 Flash - Efficient Clerk&#10;4 Tod - All Alone&#10;2 Angel - Experiment 624&#10;4 Strength of a Raging Fire"></textarea>
+          <button id="deckFind" class="secondary">Find cards</button>
+          <p class="deck-help">Each card uses its highest-rarity printing. Use the menu next to a card to pick a different one.</p>
+        </div>
+        <div class="deck-list-wrap">
+          <div id="deckSummary" class="deck-summary"></div>
+          <div id="deckList" class="deck-list"></div>
+        </div>
+      </div>
+      <div class="deck-foot">
+        <label class="check"><input id="deckOutlines" type="checkbox"> Draw thin cut lines around each card</label>
+        <span class="deck-note">Prints on a 300 × 225 mm page, 9 cards per page. Print at 100% / actual size.</span>
+        <button id="deckPdf" class="primary" disabled>Make PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="app.js"></script>
+  <script src="deck.js"></script>
+</body>
+</html>
