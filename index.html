@@ -5,17 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="icon.png">
   <title>Lorcana Card Finder</title>
+  <meta name="theme-color" content="#120b2e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Nunito:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="sky" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="stars stars-2"></div>
+    <svg class="skyline" viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="towerFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a1d5e"/><stop offset="1" stop-color="#160c30"/>
+        </linearGradient>
+        <pattern id="windows" width="14" height="18" patternUnits="userSpaceOnUse">
+          <rect x="4" y="5" width="4" height="6" rx="1" fill="#ffc35a" opacity=".55"/>
+        </pattern>
+      </defs>
+      <g fill="url(#towerFill)">
+        <path d="M0 260V170h40v-30h30v-40h12l6-30 6 30h12v40h30v50h40V120h20V80h10V40h8v40h10v40h20v140z"/>
+        <path d="M250 260V150h30v-20l25-35 25 35v20h30v110z"/>
+        <path d="M380 260V110h20V70h50v40h20v150z"/>
+        <path d="M480 260V160h30v-60l20-50 20 50v60h30v100z"/>
+        <path d="M600 260V130c0-40 30-70 70-70s70 30 70 70v130z"/>
+        <path d="M660 62h20V20l-10-18-10 18z"/>
+        <path d="M760 260V90h18V50h44v40h18v170z"/>
+        <path d="M860 260V170h26v-40h40v40h26v90z"/>
+        <path d="M970 260V120l35-50 35 50v140z"/>
+        <path d="M1060 260V60h14V24h26v36h14v200z"/>
+        <path d="M1130 260V150h40v-30h50v30h40v110z"/>
+        <path d="M1270 260V100h22l18-40 18 40h22v160z"/>
+        <path d="M1370 260V170h70v90z"/>
+      </g>
+      <g fill="url(#windows)">
+        <rect x="140" y="130" width="40" height="120"/><rect x="392" y="120" width="70" height="130"/>
+        <rect x="776" y="100" width="56" height="150"/><rect x="1068" y="70" width="40" height="180"/>
+        <rect x="1282" y="110" width="56" height="140"/><rect x="980" y="130" width="50" height="120"/>
+      </g>
+    </svg>
+    <div class="petals"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
   <header class="topbar">
-    <div class="brand">Lorcana Card Finder</div>
+    <div class="brand">
+      <img src="icon.png" alt="" class="brand-icon">
+      <div class="brand-text">
+        <span class="brand-name">Lorcana</span>
+        <span class="brand-sub">Card Finder</span>
+      </div>
+    </div>
     <div class="search">
       <input id="search" type="search" placeholder="Search by name, set, character, ink, anything..." autofocus>
     </div>
-    <button id="deckButton" class="secondary deck-button">Deck to PDF</button>
-    <button id="cartButton" class="cart-button">Cart <span id="cartCount" class="badge">0</span></button>
+    <button id="deckButton" class="secondary deck-button"><span class="btn-icon" aria-hidden="true">✦</span> Deck to PDF</button>
+    <button id="cartButton" class="cart-button"><span class="btn-icon" aria-hidden="true">❖</span> Cart <span id="cartCount" class="badge">0</span></button>
   </header>
+  <div class="papel" aria-hidden="true"></div>
 
   <div class="filters" id="filters"></div>
 
@@ -87,5 +134,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="app.js"></script>
   <script src="deck.js"></script>
+  <script src="magic.js"></script>
 </body>
 </html>
