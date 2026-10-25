@@ -11,6 +11,9 @@ Static site: open index.html from any web server. No build step.
 - deck.js: "Deck to PDF". Paste a list like `4 Flash - Efficient Clerk`; each line picks the
   highest-rarity printing (Iconic > Enchanted > Promo > Epic > Legendary > Super Rare > Rare > Uncommon > Common;
   ties go to the newest set). PDF is 300 x 225 mm, 3x3 cards of 88 x 63 mm turned sideways, 3 mm gaps, R3 corners, grid centred.
+- topdecks.js: "Top decks". Lists the decks in data/top-decks.txt (format explained at the top of that file;
+  edit it on GitHub to add a deck everyone sees) plus decks saved on that device with "Save to Top decks"
+  in the deck window. "Print this deck" opens it in Deck to PDF.
 - Cart downloads a zip of full-size JPEGs.
 
 Local test: `cd lorcana-web && python3 -m http.server` then open http://localhost:8000.
